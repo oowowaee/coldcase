@@ -59,6 +59,8 @@ class Record:
       return 'Male'
     elif 'her' in self.description:
       return 'Female'
+    elif 'woman' in self.description:
+      return 'Female'
     return ''
 
   def _get_location(self, element):

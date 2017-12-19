@@ -17,7 +17,7 @@ def main():
 
   records = []
 
-  # scraper = TorontoPoliceDepartmentScraper(browser)
+  # scraper = TorontoPoliceDepartmentScraper(browser, FIELDS)
   # scraper.scrape()
 
   scraper = TacomaCrimeStoppersScraper(browser, FIELDS)

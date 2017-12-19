@@ -52,13 +52,21 @@ class SeleniumScraper(Scraper):
 
   def _build_records_from_links(self, links):
     for link in links:
-      self._browser.get(link)
       print 'Scraping ' + link
-      element = self._browser.find_element_by_css_selector(self.RECORD_CLASS.RECORD_CONTAINER)
-      if self.RECORD_CLASS.include_record(element):
-        record = self._build_record(element, link)
+      self._browser.get(link)
+      record = self._build_record(link)
+      if record:
         self._records.append(record)
-      
+
+  def _build_record(self, link):
+    element = self._browser.find_element_by_css_selector(self.RECORD_CLASS.RECORD_CONTAINER)
+    if self.RECORD_CLASS.include_record(element):
+      try:
+        return self.RECORD_CLASS(element, source = link)
+      except NoSuchElementException:
+        print 'Could not find element in ' + link
+        return None
+
   def _get_all_record_links(self):
     links = self._get_page_links()
 
@@ -71,9 +79,6 @@ class SeleniumScraper(Scraper):
   def _get_page_links(self):
     page_links = self._browser.find_elements_by_css_selector(self.LINK_CONTAINER)
     return [link.get_attribute('href') for link in page_links]
-
-  def _build_record(self, record, link):
-    return self.RECORD_CLASS(record, source = link)
 
 
 class BeautifulSoupScraper(Scraper):

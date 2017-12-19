@@ -4,6 +4,7 @@
 from scraper import SeleniumScraper
 from record import Record
 import re
+from selenium.common.exceptions import NoSuchElementException
 
 class TorontoRecord(Record):
   RECORD_CONTAINER = '.case-details'
@@ -14,7 +15,10 @@ class TorontoRecord(Record):
     return " ".join([first_name, last_name])
 
   def _get_image(self, element):
-    return element.find_element_by_css_selector('.victim-photo a').get_attribute('href')
+    try:
+      return element.find_element_by_css_selector('.victim-photo a').get_attribute('href')
+    except NoSuchElementException:
+      return ''
 
   def _get_age(self, element):
     return element.find_elements_by_css_selector('.victim-details p')[0].text.replace('Age: ', '')
@@ -24,19 +28,20 @@ class TorontoRecord(Record):
 
   def _get_date(self, element):
     date_str = element.find_elements_by_css_selector('.victim-details p')[2].text.replace('Murdered on: ', '')
-    # datetime.datetime.strptime(date_str, "%B %d, %Y")
     return date_str 
 
   def _get_description(self, element):
     return element.find_elements_by_css_selector('.victim-details div')[0].text.replace('\n', '  ')
 
   def _get_latitude_longitude(self, element):
-    google_url = element.find_element_by_css_selector('#google-map a').get_attribute('href')
-    pattern = re.compile("(?<=ll=).*(?=&z)")
-    match = pattern.search(google_url)
+    try:
+      google_url = element.find_element_by_css_selector('#google-map a').get_attribute('href')
+      pattern = re.compile("(?<=ll=).*(?=&z)")
+      match = pattern.search(google_url)
 
-    return match.group(0).split(',') if match.group(0) else Record._get_latitude_longitude(self)
-
+      return match.group(0).split(',') if match.group(0) else Record._get_latitude_longitude(self)
+    except NoSuchElementException:
+      return ['', '']
 
 class TorontoPoliceDepartmentScraper(SeleniumScraper):
   BASE_URL = 'https://www.torontopolice.on.ca/homicide/search.php'

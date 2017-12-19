@@ -8,6 +8,8 @@ import unittest
 #2100 block of Sunset Drive W
 #38th St. and Pacific Ave.
 #frequented the area of Pacific Ave. S. and Portland Ave. in the City of Tacoma.  He was last seen in the area of 38th St. and Pacific Ave.
+#Michelle Mason was last seen alive on Thursday March 31st, 2005.  Mason’s vehicle was found a week later on April 6th, 2005, in the City of Tacoma.  On October 23rd, 2005, the remains of Michelle Mason were found in blackberry bushes below the 34th St. Bridge. 
+#a motel room in the abandoned Rainier Motel building located in the 9800 block of South Tacoma Way in 
 
 class TestAddressFinder(unittest.TestCase):
   def test_ignores_irrelevant_numbers(self):

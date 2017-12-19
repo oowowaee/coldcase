@@ -2,20 +2,22 @@ US
   http://www.miamidade.gov/police/cold-cases/
   https://www.lvmpd.com/en-us/Homicide/Pages/OpenCasesByYear.aspx
   https://troopers.ny.gov/Wanted_and_Missing/Homicide/
-  http://www.maine.gov/dps/msp/criminal_investigation/unsolved_homicides.shtml
   http://www.cookcountysheriff.org/sheriffs_police/coldcase/coldCaseFiles2001_present.html
-  http://www.bakersfieldcity.us/gov/depts/police/crime/cold_cases.htm
+  -> http://www.bakersfieldcity.us/gov/depts/police/crime/cold_cases.htm
   https://www.skagitcounty.net/Departments/Sheriff/coldcase.htm
   X http://www.tpcrimestoppers.com/case.php?cid=2
   https://gov.texas.gov/apps/cjd/crimestoppers/directory.aspx
+  -> http://www.maine.gov/dps/msp/criminal_investigation/unsolved_homicides.shtml
 
 BROKEN
   https://www.chicagopolice.org/coldcase/
+  http://vsp.vermont.gov/unsolved
 
 CANADA
   http://www.dossiersnonresolus.com/en/home.html
   http://www.rcmp-grc.gc.ca/cc-afn/index-eng.htm
   https://www.opp.ca/index.php?id=127
+  http://www.vpdcoldcases.ca/
 
 non-police
 https://www.defrostingcoldcases.com/cases-overview/

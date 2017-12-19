@@ -29,7 +29,8 @@ class TacomaCrimeStoppersRecord(Record):
     return name.title()
 
   def _get_image(self, element):
-    return element.find_element_by_tag_name('img').get_attribute('src')
+    image_src = element.find_element_by_tag_name('img').get_attribute('src')
+    return '' if 'john-doe' in image_src else image_src
 
   def _get_date(self, element):
     new_text = re.sub('([0-9]+)[\s-]years?[\s-]old', '', self.description)
