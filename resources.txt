@@ -6,7 +6,8 @@ US
   http://www.cookcountysheriff.org/sheriffs_police/coldcase/coldCaseFiles2001_present.html
   http://www.bakersfieldcity.us/gov/depts/police/crime/cold_cases.htm
   https://www.skagitcounty.net/Departments/Sheriff/coldcase.htm
-  http://www.tpcrimestoppers.com/case.php?cid=2
+  X http://www.tpcrimestoppers.com/case.php?cid=2
+  https://gov.texas.gov/apps/cjd/crimestoppers/directory.aspx
 
 BROKEN
   https://www.chicagopolice.org/coldcase/

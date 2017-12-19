@@ -2,7 +2,8 @@
 # -*- coding: utf-8 -*-
 
 from bs4 import BeautifulSoup
-from selenium import webdriver
+from selenium.common.exceptions import NoSuchElementException
+import pdb
 
 # SELENIUM CHEATSHEET
 #   driver.page_source
@@ -12,8 +13,6 @@ from selenium import webdriver
 #      self._browser.switch_to_frame(iframe)
 
 class Scraper:
-  FIELDS = ('name', 'location', 'source', 'gender', 'age', 'manner_of_death', 'date')
-
   def __init__(self):
     self._records = []
     return
@@ -22,39 +21,56 @@ class Scraper:
     self._get_initial_page()
 
     if self.NAVIGATE_TO_LINKS:
-      self._build_records_from_links()
+      links = self._get_all_record_links()
+      self._build_records_from_links(links)
 
     self._browser.close()
     return
 
 
 class SeleniumScraper(Scraper):
-  def __init__(self, webdriver_instance):
+  def __init__(self, webdriver_instance, required_fields):
     Scraper.__init__(self)
     self._browser = webdriver_instance
+    self._required_fields = required_fields
     return
 
   @property
   def records(self):
-    return [record.to_csv() for record in self._records]
+    return [record.to_array(self._required_fields) for record in self._records]
   
+  def _navigate_to_next_page(self):
+    try:
+      self._browser.find_element_by_css_selector(self.PAGINATION_CLASS).click()
+      return True
+    except NoSuchElementException:
+      return False
+
   def _get_initial_page(self):
     self._browser.get(self.BASE_URL)
     return
 
-  def _build_records_from_links(self):
-    links = self._get_record_links()
-
-    for link in links[0:5]:
+  def _build_records_from_links(self, links):
+    for link in links:
       self._browser.get(link)
+      print 'Scraping ' + link
       element = self._browser.find_element_by_css_selector(self.RECORD_CLASS.RECORD_CONTAINER)
       if self.RECORD_CLASS.include_record(element):
         record = self._build_record(element, link)
         self._records.append(record)
       
-  def _get_record_links(self):
-    links = self._browser.find_elements_by_css_selector(self.LINK_CONTAINER)
-    return [link.get_attribute('href') for link in links]
+  def _get_all_record_links(self):
+    links = self._get_page_links()
+
+    if self.PAGINATION_CLASS:
+      while self._navigate_to_next_page():
+        links += self._get_page_links()
+
+    return links
+
+  def _get_page_links(self):
+    page_links = self._browser.find_elements_by_css_selector(self.LINK_CONTAINER)
+    return [link.get_attribute('href') for link in page_links]
 
   def _build_record(self, record, link):
     return self.RECORD_CLASS(record, source = link)

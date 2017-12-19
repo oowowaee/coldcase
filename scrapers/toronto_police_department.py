@@ -16,9 +16,6 @@ class TorontoRecord(Record):
   def _get_image(self, element):
     return element.find_element_by_css_selector('.victim-photo a').get_attribute('href')
 
-  def _get_location(self, element):
-    return ''
-
   def _get_age(self, element):
     return element.find_elements_by_css_selector('.victim-details p')[0].text.replace('Age: ', '')
 
@@ -31,7 +28,7 @@ class TorontoRecord(Record):
     return date_str 
 
   def _get_description(self, element):
-    return element.find_elements_by_css_selector('.victim-details div')[0].text
+    return element.find_elements_by_css_selector('.victim-details div')[0].text.replace('\n', '  ')
 
   def _get_latitude_longitude(self, element):
     google_url = element.find_element_by_css_selector('#google-map a').get_attribute('href')
