@@ -29,10 +29,9 @@ class Scraper:
 
 
 class SeleniumScraper(Scraper):
-  def __init__(self):
+  def __init__(self, webdriver_instance):
     Scraper.__init__(self)
-    path_to_chromedriver = '/home/tally/projects/chromedriver_27'
-    self._browser = webdriver.Chrome(executable_path = path_to_chromedriver)
+    self._browser = webdriver_instance
     return
 
   @property
@@ -49,8 +48,9 @@ class SeleniumScraper(Scraper):
     for link in links[0:5]:
       self._browser.get(link)
       element = self._browser.find_element_by_css_selector(self.RECORD_CLASS.RECORD_CONTAINER)
-      record = self._build_record(element, link)
-      self._records.append(record)
+      if self.RECORD_CLASS.include_record(element):
+        record = self._build_record(element, link)
+        self._records.append(record)
       
   def _get_record_links(self):
     links = self._browser.find_elements_by_css_selector(self.LINK_CONTAINER)

@@ -40,12 +40,6 @@ class TorontoRecord(Record):
 
     return match.group(0).split(',') if match.group(0) else Record._get_latitude_longitude(self)
 
-  def _get_manner_of_death(self, element):
-    if 'gunshot' in self.description:
-      return 'shooting'
-    elif 'stab' in self.description:
-      return 'stabbing'
-    return ''
 
 class TorontoPoliceDepartmentScraper(SeleniumScraper):
   BASE_URL = 'https://www.torontopolice.on.ca/homicide/search.php'
