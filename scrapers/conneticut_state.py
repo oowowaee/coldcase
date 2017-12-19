@@ -5,7 +5,7 @@ from scraper import SeleniumScraper
 from record import Record
 import re
 
-class TorontoRecord(Record):
+class ConneticutRecord(Record):
   RECORD_CONTAINER = '.case-details'
 
   def _get_name(self, element):
@@ -47,10 +47,10 @@ class TorontoRecord(Record):
       return 'stabbing'
     return ''
 
-class TorontoPoliceDepartmentScraper(SeleniumScraper):
-  BASE_URL = 'https://www.torontopolice.on.ca/homicide/search.php'
+class ConneticutStateScraper(SeleniumScraper):
+  BASE_URL = 'http://www.ct.gov/csao/cwp/view.asp?a=1798&q=291462'
   LINK_CONTAINER = '.timeline-event a'
   NAVIGATE_TO_LINKS = True
   PAGINATION_CLASS = None
   RECORDS_CONTAINER = '#timeline'
-  RECORD_CLASS = TorontoRecord
+  RECORD_CLASS = ConneticutRecord
