@@ -8,24 +8,30 @@ import pdb
 #2100 block of Sunset Drive W
 #38th St. and Pacific Ave.
 #frequented the area of Pacific Ave. S. and Portland Ave. in the City of Tacoma.  He was last seen in the area of 38th St. and Pacific Ave.
+#911 call at 30 Titan Road
+#4:05 a.m., police responded to shooting, on Meadowbank Road
 
 class AddressFinder:
-  STREET_NAMES = '(St\.|Rd\.|Ave\.|Avenue|Street|Road|Drive)'
-  DIRECTIONS = '(East|E\.|West|W\.|North|N\.|South|S\.)'
+  STREET_SUFFIX = '(Avenue|Street|Road|Drive|St\.?|Rd\.?|Ave\.?)'
+  DIRECTIONS = '(East|E\.?|West|W\.?|North|N\.?|South|S\.?)'
+  STREET_NAME = '(([A-Z]|[0-9]+)[a-z\.]*\s){0,3}'
 
   @classmethod
   def find_addresses(cls, str):
-    address_substring = "[0-9]*([A-Z][^\s]*\s){{1,3}}{0}(\s{1})?".format(cls.STREET_NAMES, cls.DIRECTIONS)
-    pattern1_string = "[0-9]+([^\s]*\s){{1,8}}{0}(\s{1})?".format(cls.STREET_NAMES, cls.DIRECTIONS)
-    pattern2_string = "{0} (and|&) {1}".format(address_substring, address_substring)
+    address_substring = "([0-9]+[a-z]*\s(block of )?)?{0}(\s{1})?{2}(\s{3})?".format(cls.STREET_NAME,
+                                                                                     cls.DIRECTIONS,
+                                                                                     cls.STREET_SUFFIX,
+                                                                                     cls.DIRECTIONS)
 
-    pattern1 = re.compile(pattern1_string)
-    pattern2 = re.compile(pattern2_string)
+    pattern1_string = "{0} (and|&|near) {1}".format(address_substring, address_substring)
 
-    address = pattern1.search(str)
+    address_pattern = re.compile(address_substring)
+    intersection_pattern = re.compile(pattern1_string)
+
+    address = intersection_pattern.search(str)
 
     if not address:
-      address = pattern2.search(str)
+      address = address_pattern.search(str)
 
     try:
       return address.group(0)

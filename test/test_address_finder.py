@@ -32,6 +32,7 @@ class TestAddressFinder(unittest.TestCase):
     str = 'Pacific Ave. S. and Portland Ave.'
     self.assertEqual(AddressFinder.find_addresses(str), 'Pacific Ave. S. and Portland Ave.')
 
+  @unittest.skip("Context is a future concern")
   def test_considers_context(self):
     str = 'frequented the area of Pacific Ave. S. and Portland Ave. in the City of Tacoma.  He was last seen in the area of 38th St. and Pacific Ave.'
     self.assertEqual(AddressFinder.find_addresses(str), '38th St. and Pacific Ave.')
@@ -39,6 +40,14 @@ class TestAddressFinder(unittest.TestCase):
   def test_considers_only_capitals(self):
     str = 'area of Sydenham Street & Creemore Avenue'
     self.assertEqual(AddressFinder.find_addresses(str), 'Sydenham Street & Creemore Avenue')
+
+  def test_ignores_911_calls(self):
+    str = '911 call at 30 Titan Road'
+    self.assertEqual(AddressFinder.find_addresses(str), '30 Titan Road')
+
+  def test_ignores_punctuation(self):
+    str = '4:05 a.m., police responded to shooting, on Meadowbank Road near Keane Avenue'
+    self.assertEqual(AddressFinder.find_addresses(str), 'Meadowbank Road near Keane Avenue')
 
 if __name__ == '__main__':
     unittest.main()

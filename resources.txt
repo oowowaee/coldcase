@@ -8,10 +8,15 @@ US
   X http://www.tpcrimestoppers.com/case.php?cid=2
   https://gov.texas.gov/apps/cjd/crimestoppers/directory.aspx
   -> http://www.maine.gov/dps/msp/criminal_investigation/unsolved_homicides.shtml
+  -> (35) http://www.ct.gov/csao/cwp/view.asp?a=1798&q=291462
+
+  -> (1500+) https://www.projectcoldcase.org/cold-cases/
+  -> (100+) https://www.ocso.com/Crime-Information/Unresolved-Homicide
 
 BROKEN
   https://www.chicagopolice.org/coldcase/
   http://vsp.vermont.gov/unsolved
+  http://interactive.orlandosentinel.com/cold-cases-central-florida/
 
 CANADA
   http://www.dossiersnonresolus.com/en/home.html
