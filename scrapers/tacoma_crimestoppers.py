@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from scraper import SeleniumScraper
+from scraper import Scraper
 from record import Record
 from address_finder import AddressFinder
 from age_extractor import AgeExtractor
@@ -44,7 +44,7 @@ class TacomaCrimeStoppersRecord(Record):
     return "  ".join(text).replace('\n', '  ')
 
 
-class TacomaCrimeStoppersScraper(SeleniumScraper):
+class TacomaCrimeStoppersScraper(Scraper):
   BASE_URL = 'http://www.tpcrimestoppers.com/case.php?cid=2'
   LINK_CONTAINER = '.case a'
   NAVIGATE_TO_LINKS = True

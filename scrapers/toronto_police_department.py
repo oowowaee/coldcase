@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from scraper import SeleniumScraper
+from scraper import Scraper
 from record import Record
 import re
 from selenium.common.exceptions import NoSuchElementException
@@ -43,7 +43,7 @@ class TorontoRecord(Record):
     except NoSuchElementException:
       return ['', '']
 
-class TorontoPoliceDepartmentScraper(SeleniumScraper):
+class TorontoPoliceDepartmentScraper(Scraper):
   BASE_URL = 'https://www.torontopolice.on.ca/homicide/search.php'
   LINK_CONTAINER = '.timeline-event a'
   NAVIGATE_TO_LINKS = True

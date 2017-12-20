@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from scraper import SeleniumScraper
+from scraper import Scraper
 from record import Record
 import re
 
@@ -47,7 +47,7 @@ class ConneticutRecord(Record):
       return 'stabbing'
     return ''
 
-class ConneticutStateScraper(SeleniumScraper):
+class ConneticutStateScraper(Scraper):
   BASE_URL = 'http://www.ct.gov/csao/cwp/view.asp?a=1798&q=291462'
   LINK_CONTAINER = '.timeline-event a'
   NAVIGATE_TO_LINKS = True

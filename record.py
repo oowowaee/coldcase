@@ -13,7 +13,6 @@ class Record:
 
   def __init__(self, element, **kwargs):
     # TODO: These could all be properties
-
     self.description = self._get_description(element)
     self.multiple = self._determine_multiple(element)
     if self.multiple:
