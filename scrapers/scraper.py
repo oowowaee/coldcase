@@ -54,18 +54,21 @@ class Scraper:
     for link in links:
       print 'Scraping ' + link
       self._browser.get(link)
-      record = self._build_record(link)
+      self._add_record(link)
+
+  def _add_record(self, link = None):
+    element = self._browser.find_element_by_css_selector(self.RECORD_CLASS.RECORD_CONTAINER)
+    try:
+      record = self.RECORD_CLASS.from_element(element, source = link)
       if record:
         self._records.append(record)
-
-  def _build_record(self, link):
-    element = self._browser.find_element_by_css_selector(self.RECORD_CLASS.RECORD_CONTAINER)
-    if self.RECORD_CLASS.include_record(element):
-      try:
-        return self.RECORD_CLASS(element, source = link)
-      except NoSuchElementException:
+    except NoSuchElementException as e:
+      print e
+      if link:
         print 'Could not find element in ' + link
-        return None
+      else:
+        print 'Could not find element for record'
+      return
 
   def _get_all_record_links(self):
     links = self._get_page_links()

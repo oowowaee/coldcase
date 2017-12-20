@@ -49,5 +49,9 @@ class TestAddressFinder(unittest.TestCase):
     str = '4:05 a.m., police responded to shooting, on Meadowbank Road near Keane Avenue'
     self.assertEqual(AddressFinder.find_addresses(str), 'Meadowbank Road near Keane Avenue')
 
+  def test_finds_roadway(self):
+    str = 'police responded to an emergency call in the area of Lake Shore Boulevard E and Don Roadway'
+    self.assertEqual(AddressFinder.find_addresses(str), 'Lake Shore Boulevard E and Don Roadway')
+
 if __name__ == '__main__':
     unittest.main()

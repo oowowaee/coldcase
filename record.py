@@ -3,53 +3,80 @@
 
 from address_finder import AddressFinder
 from age_extractor import AgeExtractor
+from record_element import RecordElement
+import pdb
 
 class Record:
   FIELDS = ('name', 'description', 'location', 'image', 'source', 'gender', 'age', 'manner_of_death', 'date', 'latitude', 'longitude')
+  ELEMENT_CLASS = RecordElement
+
+  @classmethod
+  def from_element(cls, element, **kwargs):
+    element = cls.ELEMENT_CLASS(element)
+    record = cls(element)
+
+    if cls.include_record(element):
+      record.source = kwargs.get('source', '')
+      element.populate_fields()
+      return record
+    return None
 
   @classmethod
   def include_record(cls, element):
     return True
 
-  def __init__(self, element, **kwargs):
-    # TODO: These could all be properties
-    self.description = self._get_description(element)
-    self.multiple = self._determine_multiple(element)
+  def __init__(self, element):
+    self._element = element
+    self.source = None
     if self.multiple:
       self.name = 'Multiple'
       self.gender = ''
       self.age = ''
     else:
-      self.name = self._get_name(element)
-      self.gender = self._get_gender(element)
-      self.age = self._get_age(element)
-    self.location = self._get_location(element)
-    self.date = self._get_date(element)
-    self.image = self._get_image(element)
-    self.latitude, self.longitude = self._get_latitude_longitude(element)
-    self.manner_of_death = self._get_manner_of_death(element)
-    self.source = kwargs.get('source', '')
+      self.name = self._get_name()
+      self.gender = self._get_gender()
+      self.age = self._get_age()
     return
 
-  def _determine_multiple(self, element):
+  @property
+  def multiple(self):
     return False
 
-  def _get_description(self, element):
+  @property
+  def description(self):
+    return self._element.description.replace('\n', '  ')
+
+  @property
+  def latitude(self):
     return ''
 
-  def _get_latitude_longitude(self, element):
-    return ['', '']
+  @property
+  def longitude(self):
+    return ''
 
-  def _get_image(self, element):
-    raise NotImplementedError
+  @property
+  def image(self):
+    return self._element.image
 
-  def _get_name(self, element):
-    raise NotImplementedError
+  @property
+  def date(self):
+    return self._element.date
 
-  def _get_date(self, element):
-    raise NotImplementedError
+  @property
+  def location(self):
+    return AddressFinder.find_addresses(self.description)
 
-  def _get_gender(self, element):
+  @property
+  def manner_of_death(self):
+    return self._determine_manner_of_death(self.description)
+
+  def _get_age(self):
+    return AgeExtractor.find_age(self.description)
+
+  def _get_name(self):
+    return self._element.name
+
+  def _get_gender(self):
     if 'male' in self.description:
       return 'Male'
     elif 'female' in self.description:
@@ -61,15 +88,6 @@ class Record:
     elif 'woman' in self.description:
       return 'Female'
     return ''
-
-  def _get_location(self, element):
-    return AddressFinder.find_addresses(self.description)
-
-  def _get_age(self, element):
-    return AgeExtractor.find_age(self.description)
-
-  def _get_manner_of_death(self, element):
-    return self._determine_manner_of_death(self.description)
 
   def _determine_manner_of_death(self, text):
     text = text.lower()

@@ -3,45 +3,69 @@
 
 from scraper import Scraper
 from record import Record
+from record_element import RecordElement
+
 from address_finder import AddressFinder
 from age_extractor import AgeExtractor
 
+from cached_property import cached_property
 import re
 import datefinder
 import pdb
 
+class TacomaCrimeStoppersRecordElement(RecordElement):
+  @cached_property
+  def text(self):
+    return self._element.text
+
+  @cached_property
+  def name(self):
+    return self._element.find_element_by_tag_name('h3').text
+
+  @cached_property
+  def image(self):
+    return self._element.find_element_by_tag_name('img').get_attribute('src')
+
+  @cached_property
+  def description(self):
+    return [el.text for el in self._element.find_elements_by_tag_name('p')]
+
 class TacomaCrimeStoppersRecord(Record):
   RECORD_CONTAINER = '.profile_container'
+  ELEMENT_CLASS = TacomaCrimeStoppersRecordElement
 
   # Todo, this really shouldn't be a class method
   @classmethod
   def include_record(cls, element):
     unsolved = 'DATE SOLVED' not in element.text
-    identified = 'UNIDENTIFIED' not in element.find_element_by_tag_name('h3').text
+    identified = 'UNIDENTIFIED' not in element.name
     return unsolved and identified
 
-  def _determine_multiple(self, element):
-    name = element.find_element_by_tag_name('h3').text
+  @property
+  def multiple(self):
+    name = self._element.name
     return 'Victims' in name or '&' in name
 
-  def _get_name(self, element):
-    name = element.find_element_by_tag_name('h3').text.replace('VICTIM ', '')
-    return name.title()
-
-  def _get_image(self, element):
-    image_src = element.find_element_by_tag_name('img').get_attribute('src')
+  @property
+  def image(self):
+    image_src = self._element.image
     return '' if 'john-doe' in image_src else image_src
 
-  def _get_date(self, element):
+  @property
+  def description(self):
+    return "  ".join(self._element.description).replace('\n', '  ')
+
+  @property
+  def date(self):
     new_text = re.sub('([0-9]+)[\s-]years?[\s-]old', '', self.description)
     dates = datefinder.find_dates(new_text)
     # datefinder is throwing false positives for 38-years-old
 
     return dates.next().strftime("%B %d, %Y")
 
-  def _get_description(self, element):
-    text = [el.text for el in element.find_elements_by_tag_name('p')]
-    return "  ".join(text).replace('\n', '  ')
+  def _get_name(self):
+    name = self._element.name.replace('VICTIM ', '')
+    return name.title()
 
 
 class TacomaCrimeStoppersScraper(Scraper):

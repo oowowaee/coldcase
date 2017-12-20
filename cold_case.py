@@ -4,24 +4,33 @@
 import pdb
 from scrapers.toronto_police_department import TorontoPoliceDepartmentScraper
 from scrapers.tacoma_crimestoppers import TacomaCrimeStoppersScraper
+from scrapers.orange_county_sherriff import OrangeCountySherriffScraper
 from selenium import webdriver
+import argparse
 
 import csv
 
 def main():
-  # path_to_chromedriver = '/home/tally/projects/chromedriver_27'
-  # browser = webdriver.Chrome(executable_path = path_to_chromedriver)
-
-  browser = webdriver.PhantomJS()
   FIELDS = ('name', 'location', 'image', 'source', 'gender', 'age', 'description', 'manner_of_death', 'date', 'latitude', 'longitude')
-
   records = []
+  command_args = _get_args()
+
+  if command_args.chrome:
+    path_to_chromedriver = '/home/tally/projects/chromedriver_27'
+    browser = webdriver.Chrome(executable_path = path_to_chromedriver)
+  else:
+    browser = webdriver.PhantomJS()
+
+  browser.implicitly_wait(2)
 
   # scraper = TorontoPoliceDepartmentScraper(browser, FIELDS)
   # scraper.scrape()
 
   scraper = TacomaCrimeStoppersScraper(browser, FIELDS)
   scraper.scrape()
+
+  # scraper = OrangeCountySherriffScraper(browser, FIELDS)
+  # scraper.scrape()
 
   records += scraper.records
   outfile = 'csv/' + scraper.__class__.__name__ + '.csv'
@@ -35,6 +44,14 @@ def main():
 
     for record in records:
       writer.writerow([unicode(s).encode('utf-8') for s in record])
+
+def _get_args():
+  help_text = "{}"
+  parser = argparse.ArgumentParser()
+  parser.add_argument("-c", "--chrome", action='store_true',
+                      help=help_text.format("flag to use chrome browswer"))
+
+  return parser.parse_args()
 
 if __name__ == '__main__':
   main()
