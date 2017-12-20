@@ -79,8 +79,8 @@ class TorontoRecord(Record):
 
   def _get_name(self):
     first_name = self._element.first_name
-    last_name = self._element.last_name.capitalize()
-    return ' '.join([first_name, last_name])
+    last_name = self._element.last_name.title()
+    return ' '.join([first_name, last_name]).strip()
 
   def _get_age(self):
     return self._element.age.replace('Age: ', '')

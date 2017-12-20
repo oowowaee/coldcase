@@ -30,11 +30,11 @@ class TacomaCrimeStoppersRecordElement(RecordElement):
   def description(self):
     return [el.text for el in self._element.find_elements_by_tag_name('p')]
 
+
 class TacomaCrimeStoppersRecord(Record):
   RECORD_CONTAINER = '.profile_container'
   ELEMENT_CLASS = TacomaCrimeStoppersRecordElement
 
-  # Todo, this really shouldn't be a class method
   @classmethod
   def include_record(cls, element):
     unsolved = 'DATE SOLVED' not in element.text
@@ -64,8 +64,7 @@ class TacomaCrimeStoppersRecord(Record):
     return dates.next().strftime("%B %d, %Y")
 
   def _get_name(self):
-    name = self._element.name.replace('VICTIM ', '')
-    return name.title()
+    return self._element.name.replace('VICTIM ', '').title()
 
 
 class TacomaCrimeStoppersScraper(Scraper):

@@ -12,7 +12,7 @@ import pdb
 #4:05 a.m., police responded to shooting, on Meadowbank Road
 
 class AddressFinder:
-  STREET_SUFFIX = '(Avenue|Street|Road[a-z]*|Boulevard|Drive|Blvd\.|St\.?|Rd\.?|Ave\.?)'
+  STREET_SUFFIX = '(Avenue|Street|Way|Bridge|Road[a-z]*|Boulevard|Drive|Blvd\.|St\.?|Rd\.?|Ave\.?)'
   DIRECTIONS = '(East|E\.?|West|W\.?|North|N\.?|South|S\.?)'
   STREET_NAME = '(([A-Z]|[0-9]+)[a-z\.]*\s){0,3}'
 
