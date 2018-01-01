@@ -4,13 +4,17 @@
 from scraper import Scraper
 from record import Record
 from record_element import RecordElement
+
 from selenium.common.exceptions import NoSuchElementException
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
 from datetime import datetime
 from dateutil.relativedelta import relativedelta
 from cached_property import cached_property
-
 import re
 import pdb
+import datefinder
 
 class OrangeCountySherriffRecordElement(RecordElement):
   @cached_property
@@ -28,48 +32,68 @@ class OrangeCountySherriffRecord(Record):
 
   @classmethod
   def include_record(cls, element):
-    return 'Doe' not in element.body
+    return 'UNRESOLVED CASE INFORMATION Unknown White Male' not in element.body and 'UNRESOLVED CASE INFORMATION Unidentified Female' not in element.body  and 'UNRESOLVED CASE INFORMATION Unidentified Male' not in element.body
 
-  @cached_property
+  @property
   def image(self):
     image_src = self._element.image
-    return '' if 'john-doe' in image_src else image_src
+    return '' if image_src in ['https://www.ocso.com/Portals/0/UnresolvedHomicides/photo-not-available.jpg',
+                               'https://www.ocso.com/Portals/0/UnresolvedHomicides/',
+                               'https://www.ocso.com/Portals/0/UnresolvedHomicides/DOE.png'] else image_src
 
-  @cached_property
+  @property
   def location(self):
-    pattern = re.compile("(?<=Location:).*?(?=\n)")
-    return pattern.search(self._element.body).group(0)
+    pattern = re.compile('(?<=Location:).*?(?=\n)')
+    return pattern.search(self._element.body).group(0).strip()
 
   @cached_property
   def date(self):
-    pattern = re.compile("(?<=Date Murdered:).*?(?=\n)")
-    date = pattern.search(self._element.body).group(0).strip()
-    date = datetime.strptime(date, '%d/%m/%y')
+    # There is at least one case where the murder date is listed incorrectly,
+    # so try to read it from the description first
+    
+    dates = datefinder.find_dates(self.description)
 
-    return date.strftime("%B %d, %Y")
+    try:
+      try:
+        date = dates.next()
+      except StopIteration:
+        pattern = re.compile('(?<=Date Murdered:).*?(?=\n)')
+        date = pattern.search(self._element.body).group(0).strip()
+        date = datetime.strptime(date, '%m/%d/%Y')
+
+      return date.strftime('%B %d, %Y')
+
+    except ValueError:
+      pdb.set_trace()
 
   @cached_property
   def description(self):
-    pattern = re.compile("(?<=Description:).*?(?=\n\nSubmit)")
-    return pattern.search(self._element.body).group(0)
+    pattern = re.compile('(?<=Description:).*?(?=\n\nSubmit)')
+    return pattern.search(self._element.body).group(0).strip()
 
   def _get_name(self):
-    return self._element.body
+    pattern = re.compile('.*?(?=\n)')
+    return pattern.match(self._element.body).group(0).strip()
 
   def _get_gender(self):
-    pattern = re.compile("(?<=Sex:).*?(?=\n)")
+    pattern = re.compile('(?<=Sex:).*?(?=\n)')
     gender = pattern.search(self._element.body).group(0).strip()    
-    return 'Male' if gender == 'M' else 'Female'
+    return 'Male' if gender[0] == 'M' else 'Female'
 
   def _get_age(self):
-    pattern = re.compile("(?<=Age:).*?(?=Race)")
+    pattern = re.compile('(?<=Age:).*?(?=Race)')
     age = pattern.search(self._element.body).group(0).strip()
 
-    if age == 0:
-      pattern = re.compile("(?<=DOB:).*?(?=\n)")
-      dob = pattern.search(self._element.body).group(0).strip()      
-      dob = datetime.strptime(dob, '%d/%m/%y')
-      age = relativedelta(self._get_date(), dob).years
+    # Unfortunately age field is sometimes wrong and set as 0
+    if age == '0':
+      pattern = re.compile('(?<=DOB:).*?(?=\n)')
+      dob = pattern.search(self._element.body).group(0).strip()
+      try:   
+        dob = datetime.strptime(dob, '%m/%d/%Y')
+      except ValueError:
+        return ''
+      date = datetime.strptime(self.date, '%B %d, %Y')
+      age = relativedelta(date, dob).years
 
     return age
 
@@ -86,26 +110,37 @@ class OrangeCountySherriffScraper(Scraper):
     self._get_initial_page()
     self._visit_image_links()
 
-  def _visit_image_links(self):
+  # Navigate to each image link on the page
+  # When we run out of links, increment the page counter, navigate to the
+  # next page and start again.
+  # When no next link exists any longer, we're done!
+  def _visit_image_links(self, page = 0):
     link_idx = 0
+
+    print 'page {0}'.format(page)
+
+    # We go too fast sometimes, so wait until all the js has finished and the
+    # page we're on is marked as such
+    wait = WebDriverWait(self._browser, 5)
+    element = wait.until(EC.text_to_be_present_in_element((By.CSS_SELECTOR, 'span.CommandButton'), str(page + 1)))
 
     try:
       while True:
         link_class = 'a[id$="__lnk_{0}"]'.format(link_idx)
-        print link_class
         self._browser.find_element_by_css_selector(link_class).click()
         print 'Scraping record {0}'.format(link_idx)
         self._harvest_link_information()
         link_idx += 1
     except NoSuchElementException:
-      print 'No record {0}'.format(link_idx)
-      if self._navigate_to_next_page():
-        print self._browser.current_url
-        self._visit_image_links()
+      if link_idx < 16 and page < 21:
+        print 'skipped records!'
+        pdb.set_trace()
+
+      if self._navigate_to_next_page(True):
+        self._visit_image_links(page + 1)
     return
 
   def _harvest_link_information(self):
     self._add_record()
-    pdb.set_trace()
     self._browser.find_element_by_link_text('<< Return').click()
     return

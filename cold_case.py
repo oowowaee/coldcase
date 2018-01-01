@@ -11,7 +11,7 @@ import argparse
 import csv
 
 def main():
-  FIELDS = ('name', 'location', 'image', 'source', 'gender', 'age', 'description', 'manner_of_death', 'date', 'latitude', 'longitude')
+  FIELDS = ('name', 'location', 'date', 'manner_of_death', 'source', 'image', 'gender', 'age', 'description', 'latitude', 'longitude')
   records = []
   command_args = _get_args()
 
@@ -21,16 +21,16 @@ def main():
   else:
     browser = webdriver.PhantomJS()
 
-  browser.implicitly_wait(2)
+  browser.implicitly_wait(5)
 
   # scraper = TorontoPoliceDepartmentScraper(browser, FIELDS)
   # scraper.scrape()
 
-  scraper = TacomaCrimeStoppersScraper(browser, FIELDS)
-  scraper.scrape()
-
-  # scraper = OrangeCountySherriffScraper(browser, FIELDS)
+  # scraper = TacomaCrimeStoppersScraper(browser, FIELDS)
   # scraper.scrape()
+
+  scraper = OrangeCountySherriffScraper(browser, FIELDS)
+  scraper.scrape()
 
   records += scraper.records
   outfile = 'csv/' + scraper.__class__.__name__ + '.csv'

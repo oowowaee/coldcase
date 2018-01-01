@@ -6,6 +6,7 @@ from age_extractor import AgeExtractor
 from record_element import RecordElement
 import pdb
 
+# Wraps the extracted page data.
 class Record:
   FIELDS = ('name', 'description', 'location', 'image', 'source', 'gender', 'age', 'manner_of_death', 'date', 'latitude', 'longitude')
   ELEMENT_CLASS = RecordElement
@@ -27,7 +28,7 @@ class Record:
 
   def __init__(self, element):
     self._element = element
-    self.source = None
+    self.source = ''
     if self.multiple:
       self.name = 'Multiple'
       self.gender = ''

@@ -4,6 +4,7 @@
 from cached_property import cached_property
 import pdb
 
+# Wrapper for a Selenium Element
 class RecordElement:
   def __init__(self, element):
     self._element = element
@@ -15,6 +16,9 @@ class RecordElement:
     self._latitude_longitude = None
     return
 
+  # Prefill all values
+  # As we'll lose access to the page element itself when navigating away from the page
+  # precache all the requisite data fields
   def populate_fields(self):
     values = [name for name, value in vars(self.__class__).items() if isinstance(value, cached_property)]
     for value in values:

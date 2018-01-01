@@ -15,6 +15,7 @@ class AddressFinder:
   STREET_SUFFIX = '(Avenue|Street|Way|Bridge|Road[a-z]*|Boulevard|Drive|Blvd\.|St\.?|Rd\.?|Ave\.?)'
   DIRECTIONS = '(East|E\.?|West|W\.?|North|N\.?|South|S\.?)'
   STREET_NAME = '(([A-Z]|[0-9]+)[a-z\.]*\s){0,3}'
+  NAMED_STREETS = 'The [A-Z][a-z]+'
 
   @classmethod
   def find_addresses(cls, str):
@@ -23,7 +24,7 @@ class AddressFinder:
                                                                                      cls.STREET_SUFFIX,
                                                                                      cls.DIRECTIONS)
 
-    pattern1_string = "{0} (and|&|near) {1}".format(address_substring, address_substring)
+    pattern1_string = "{0} (and|&|near) ({1}|{2})".format(address_substring, address_substring, cls.NAMED_STREETS)
 
     address_pattern = re.compile(address_substring)
     intersection_pattern = re.compile(pattern1_string)

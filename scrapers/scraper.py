@@ -12,12 +12,12 @@ import pdb
 #      self._browser.switch_to_frame(iframe)
 
 class Scraper:
-  BASE_URL = ''
-  LINK_CONTAINER = 'a'
+  BASE_URL = ''                     # ROOT PAGE URL
+  LINK_CONTAINER = 'a'              # CSS CLASS FOR SELECTING PAGE LINKS
   CATEGORY_LINKS_CONTAINER = None
-  NAVIGATE_TO_LINKS = True
-  PAGINATION_CLASS = None
-  RECORD_CLASS = None
+  NAVIGATE_TO_LINKS = True          # True iff we need to harvest the information from the linked pages
+  PAGINATION_CLASS = None           # CSS Class for finding 'next' link
+  RECORD_CLASS = None               # CSS Class for container wrapping an individual record
 
   def __init__(self, webdriver_instance, required_fields):
     self._browser = webdriver_instance
@@ -39,9 +39,15 @@ class Scraper:
     self._browser.close()
     return
 
-  def _navigate_to_next_page(self):
+  def _navigate_to_next_page(self, scroll_up = False):
     try:
-      self._browser.find_element_by_css_selector(self.PAGINATION_CLASS).click()
+      # Sticky headers are dicks.  If scroll_up flag is passed, navigate to the nav
+      # links and scroll up a bit.
+      el = self._browser.find_element_by_css_selector(self.PAGINATION_CLASS)
+      if scroll_up:
+        el.location_once_scrolled_into_view
+        self._browser.execute_script("window.scrollBy(0, -150);")
+      el.click()
       return True
     except NoSuchElementException:
       return False
@@ -56,7 +62,7 @@ class Scraper:
       self._browser.get(link)
       self._add_record(link)
 
-  def _add_record(self, link = None):
+  def _add_record(self, link = ''):
     element = self._browser.find_element_by_css_selector(self.RECORD_CLASS.RECORD_CONTAINER)
     try:
       record = self.RECORD_CLASS.from_element(element, source = link)
