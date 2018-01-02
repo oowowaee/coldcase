@@ -39,14 +39,18 @@ class Scraper:
     self._browser.close()
     return
 
+  def _scroll_up_from_element(self, el):
+    el.location_once_scrolled_into_view
+    self._browser.execute_script("window.scrollBy(0, -150);")
+    return
+
   def _navigate_to_next_page(self, scroll_up = False):
     try:
       # Sticky headers are dicks.  If scroll_up flag is passed, navigate to the nav
       # links and scroll up a bit.
       el = self._browser.find_element_by_css_selector(self.PAGINATION_CLASS)
       if scroll_up:
-        el.location_once_scrolled_into_view
-        self._browser.execute_script("window.scrollBy(0, -150);")
+        self._scroll_up_from_element(el)
       el.click()
       return True
     except NoSuchElementException:

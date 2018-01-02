@@ -32,7 +32,7 @@ class OrangeCountySherriffRecord(Record):
 
   @classmethod
   def include_record(cls, element):
-    return 'UNRESOLVED CASE INFORMATION Unknown White Male' not in element.body and 'UNRESOLVED CASE INFORMATION Unidentified Female' not in element.body  and 'UNRESOLVED CASE INFORMATION Unidentified Male' not in element.body
+    return element.body.startswith('Unknown') or element.body.startswith('Unidentified')
 
   @property
   def image(self):
@@ -76,9 +76,13 @@ class OrangeCountySherriffRecord(Record):
     return pattern.match(self._element.body).group(0).strip()
 
   def _get_gender(self):
-    pattern = re.compile('(?<=Sex:).*?(?=\n)')
-    gender = pattern.search(self._element.body).group(0).strip()    
-    return 'Male' if gender[0] == 'M' else 'Female'
+    try:
+      pattern = re.compile('(?<=Sex:).*?(?=\n)')
+      gender = pattern.search(self._element.body).group(0).strip()    
+      return 'Male' if gender[0] == 'M' else 'Female'
+    except IndexError:
+      # There is a record lacking a gender
+      return ''
 
   def _get_age(self):
     pattern = re.compile('(?<=Age:).*?(?=Race)')
@@ -91,6 +95,7 @@ class OrangeCountySherriffRecord(Record):
       try:   
         dob = datetime.strptime(dob, '%m/%d/%Y')
       except ValueError:
+        # Zafer Barkasie lacks a DOB
         return ''
       date = datetime.strptime(self.date, '%B %d, %Y')
       age = relativedelta(date, dob).years
@@ -127,7 +132,9 @@ class OrangeCountySherriffScraper(Scraper):
     try:
       while True:
         link_class = 'a[id$="__lnk_{0}"]'.format(link_idx)
-        self._browser.find_element_by_css_selector(link_class).click()
+        el = self._browser.find_element_by_css_selector(link_class)
+        self._scroll_up_from_element(el)
+        el.click()
         print 'Scraping record {0}'.format(link_idx)
         self._harvest_link_information()
         link_idx += 1
@@ -142,5 +149,7 @@ class OrangeCountySherriffScraper(Scraper):
 
   def _harvest_link_information(self):
     self._add_record()
-    self._browser.find_element_by_link_text('<< Return').click()
+    el = self._browser.find_element_by_link_text('<< Return')
+    self._scroll_up_from_element(el)
+    el.click()
     return

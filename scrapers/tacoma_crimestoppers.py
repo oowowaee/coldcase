@@ -42,6 +42,10 @@ class TacomaCrimeStoppersRecord(Record):
     return unsolved and identified
 
   @property
+  def location(self):
+    return AddressFinder.find_addresses(self.description) + ', Tacoma'
+
+  @property
   def multiple(self):
     name = self._element.name
     return 'Victims' in name or '&' in name

@@ -56,6 +56,10 @@ class TorontoRecord(Record):
   ELEMENT_CLASS = TorontoRecordElement
 
   @property
+  def location(self):
+    return AddressFinder.find_addresses(self.description) + ', Toronto'
+
+  @property
   def date(self):
     return self._element.date.replace('Murdered on: ', '')
 
