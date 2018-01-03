@@ -11,7 +11,7 @@ import argparse
 import csv
 
 def main():
-  FIELDS = ('name', 'location', 'date', 'manner_of_death', 'source', 'image', 'gender', 'age', 'description', 'latitude', 'longitude')
+  FIELDS = ('name', 'location', 'date', 'manner_of_death', 'source', 'image', 'gender', 'age', 'description', 'identifier', 'latitude', 'longitude')
   records = []
   command_args = _get_args()
 
@@ -23,16 +23,18 @@ def main():
 
   browser.implicitly_wait(5)
 
-  # scraper = TorontoPoliceDepartmentScraper(browser, FIELDS)
-  # scraper.scrape()
-
+  scraper = TorontoPoliceDepartmentScraper(browser, FIELDS)
   # scraper = TacomaCrimeStoppersScraper(browser, FIELDS)
-  # scraper.scrape()
+  # scraper = OrangeCountySherriffScraper(browser, FIELDS)
 
-  scraper = OrangeCountySherriffScraper(browser, FIELDS)
-  scraper.scrape()
-
+  if command_args.pickle:
+    scraper.unpickle()
+  else:
+    scraper.scrape()
+    scraper.pickle()
+  
   records += scraper.records
+
   outfile = 'csv/' + scraper.__class__.__name__ + '.csv'
 
   with open(outfile, 'wb') as csvfile:
@@ -49,7 +51,9 @@ def _get_args():
   help_text = "{}"
   parser = argparse.ArgumentParser()
   parser.add_argument("-c", "--chrome", action='store_true',
-                      help=help_text.format("flag to use chrome browswer"))
+                      help=help_text.format("flag to use chrome browser"))
+  parser.add_argument("-p", "--pickle", action='store_true',
+                      help=help_text.format("flag to use pickled data"))
 
   return parser.parse_args()
 

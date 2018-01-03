@@ -5,8 +5,19 @@ from scraper import Scraper
 from record import Record
 import re
 
-class ConneticutRecord(Record):
-  RECORD_CONTAINER = '.case-details'
+class MaineStateRecordElement(RecordElement):
+  @cached_property
+  def image(self):
+    return self._element.find_element_by_tag_name('img').get_attribute('src')
+
+  @cached_property
+  def body(self):
+    return self._element.find_element_by_tag_name('td').text
+
+
+class MaineStateRecord(Record):
+  RECORD_CONTAINER = '#awt-content-area'
+  ELEMENT_CLASS = MaineStateRecordElement
 
   def _get_name(self, element):
     first_name = element.find_element_by_class_name('victim-name').text
@@ -47,10 +58,11 @@ class ConneticutRecord(Record):
       return 'stabbing'
     return ''
 
-class ConneticutStateScraper(Scraper):
-  BASE_URL = 'http://www.ct.gov/csao/cwp/view.asp?a=1798&q=291462'
-  LINK_CONTAINER = '.timeline-event a'
+
+class MainStateScraper(Scraper):
+  BASE_URL = 'http://www.maine.gov/dps/msp/criminal_investigation/unsolved_homicides.shtml'
+  LINK_CONTAINER = 'td a'
   NAVIGATE_TO_LINKS = True
-  PAGINATION_CLASS = None
-  RECORDS_CONTAINER = '#timeline'
-  RECORD_CLASS = ConneticutRecord
+  PAGINATION_SELECTOR = None
+  RECORDS_CONTAINER = '#unsolved'
+  RECORD_CLASS = MaineStateRecord

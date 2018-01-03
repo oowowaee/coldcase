@@ -75,6 +75,6 @@ class TacomaCrimeStoppersScraper(Scraper):
   BASE_URL = 'http://www.tpcrimestoppers.com/case.php?cid=2'
   LINK_CONTAINER = '.case a'
   NAVIGATE_TO_LINKS = True
-  PAGINATION_CLASS = 'a.next'
+  PAGINATION_SELECTOR = 'a.next'
   RECORDS_CONTAINER = '.cases'
   RECORD_CLASS = TacomaCrimeStoppersRecord

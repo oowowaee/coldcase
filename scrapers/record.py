@@ -8,7 +8,7 @@ import pdb
 
 # Wraps the extracted page data.
 class Record:
-  FIELDS = ('name', 'description', 'location', 'image', 'source', 'gender', 'age', 'manner_of_death', 'date', 'latitude', 'longitude')
+  RECORD_CLASS = None               # CSS Class for container wrapping an individual record
   ELEMENT_CLASS = RecordElement
 
   @classmethod
@@ -47,6 +47,10 @@ class Record:
   def description(self):
     return self._element.description.replace('\n', '  ')
 
+  @property
+  def identifier(self):
+    return ''
+  
   @property
   def latitude(self):
     return ''
@@ -104,5 +108,4 @@ class Record:
     return ''
 
   def to_array(self, fields):
-    fields = fields or self.FIELDS
     return [getattr(self, field) for field in fields]

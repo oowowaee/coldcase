@@ -5,6 +5,7 @@ from cached_property import cached_property
 from scraper import Scraper
 from record import Record
 from record_element import RecordElement
+from address_finder import AddressFinder
 
 import pdb
 import re
@@ -97,5 +98,5 @@ class TorontoPoliceDepartmentScraper(Scraper):
   BASE_URL = 'https://www.torontopolice.on.ca/homicide/search.php'
   LINK_CONTAINER = '.timeline-event a'
   NAVIGATE_TO_LINKS = True
-  PAGINATION_CLASS = None
+  PAGINATION_SELECTOR = None
   RECORD_CLASS = TorontoRecord

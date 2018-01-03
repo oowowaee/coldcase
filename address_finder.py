@@ -11,6 +11,7 @@ import pdb
 #911 call at 30 Titan Road
 #4:05 a.m., police responded to shooting, on Meadowbank Road
 
+# TODO: Return multiple addresses
 class AddressFinder:
   STREET_SUFFIX = '(Avenue|Street|Way|Bridge|Road[a-z]*|Boulevard|Drive|Blvd\.|St\.?|Rd\.?|Ave\.?)'
   DIRECTIONS = '(East|E\.?|West|W\.?|North|N\.?|South|S\.?)'

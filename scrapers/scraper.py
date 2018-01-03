@@ -3,6 +3,7 @@
 
 from selenium.common.exceptions import NoSuchElementException
 import pdb
+import dill as pickle
 
 # SELENIUM CHEATSHEET
 #   driver.page_source
@@ -16,14 +17,18 @@ class Scraper:
   LINK_CONTAINER = 'a'              # CSS CLASS FOR SELECTING PAGE LINKS
   CATEGORY_LINKS_CONTAINER = None
   NAVIGATE_TO_LINKS = True          # True iff we need to harvest the information from the linked pages
-  PAGINATION_CLASS = None           # CSS Class for finding 'next' link
-  RECORD_CLASS = None               # CSS Class for container wrapping an individual record
+  PAGINATION_SELECTOR = None           # CSS Class for finding 'next' link
+  RECORDS_CONTAINER = '#unsolved'   # CSS Selector for wrapping records
 
   def __init__(self, webdriver_instance, required_fields):
     self._browser = webdriver_instance
     self._records = []
     self._required_fields = required_fields
     return
+
+  @property
+  def pickle_file(self):
+    return 'pickle/' + self.__class__.__name__ + '.pickle'
 
   @property
   def records(self):
@@ -39,6 +44,18 @@ class Scraper:
     self._browser.close()
     return
 
+  def pickle(self):
+    picklefile = open(self.pickle_file, 'wb')
+    pickle.dump(self._records, picklefile)
+    picklefile.close()
+    return
+
+  def unpickle(self):
+    picklefile = open(self.pickle_file, 'rb')
+    self._records = pickle.load(picklefile)
+    picklefile.close()
+    return
+
   def _scroll_up_from_element(self, el):
     el.location_once_scrolled_into_view
     self._browser.execute_script("window.scrollBy(0, -150);")
@@ -48,7 +65,7 @@ class Scraper:
     try:
       # Sticky headers are dicks.  If scroll_up flag is passed, navigate to the nav
       # links and scroll up a bit.
-      el = self._browser.find_element_by_css_selector(self.PAGINATION_CLASS)
+      el = self._browser.find_element_by_css_selector(self.PAGINATION_SELECTOR)
       if scroll_up:
         self._scroll_up_from_element(el)
       el.click()
@@ -73,7 +90,7 @@ class Scraper:
       if record:
         self._records.append(record)
     except NoSuchElementException as e:
-      print e
+      # print e
       if link:
         print 'Could not find element in ' + link
       else:
@@ -83,7 +100,7 @@ class Scraper:
   def _get_all_record_links(self):
     links = self._get_page_links()
 
-    if self.PAGINATION_CLASS:
+    if self.PAGINATION_SELECTOR:
       while self._navigate_to_next_page():
         links += self._get_page_links()
 

@@ -46,7 +46,7 @@ class TestAddressFinder(unittest.TestCase):
     str = 'police responded to an emergency call in the area of Lake Shore Boulevard E and Don Roadway'
     self.assertEqual(AddressFinder.find_addresses(str), 'Lake Shore Boulevard E and Don Roadway')
 
-  def test_finds_westway(self):
+  def test_finds_named_road(self):
     str = 'Wincott Drive and The Westway'
     self.assertEqual(AddressFinder.find_addresses(str), str)
 
@@ -57,6 +57,11 @@ class TestAddressFinder(unittest.TestCase):
   def test_finds_bridge(self):
     str = 'seen alive on Thursday March 31st, 2005.  Mason’s vehicle was found a week later on April 6th, 2005, in the City of Tacoma.  On October 23rd, 2005, the remains of Michelle Mason were found in blackberry bushes below the 34th St. Bridge.'
     self.assertEqual(AddressFinder.find_addresses(str), '34th St. Bridge')
+
+  def test_finds_proximity_address(self):
+    str = '168th St. E. near the intersection with B St. E. in Spanaway.'
+    self.assertEqual(AddressFinder.find_addresses(str), '168th St. E. near the intersection with B St. E.')
+
 
 if __name__ == '__main__':
     unittest.main()

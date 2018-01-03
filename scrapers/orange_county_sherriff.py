@@ -32,7 +32,8 @@ class OrangeCountySherriffRecord(Record):
 
   @classmethod
   def include_record(cls, element):
-    return element.body.startswith('Unknown') or element.body.startswith('Unidentified')
+    body = element.body.lower()
+    return body.startswith('Unknown') or body.startswith('Unidentified')
 
   @property
   def image(self):
@@ -65,6 +66,7 @@ class OrangeCountySherriffRecord(Record):
 
     except ValueError:
       pdb.set_trace()
+      return ''
 
   @cached_property
   def description(self):
@@ -107,7 +109,7 @@ class OrangeCountySherriffScraper(Scraper):
   BASE_URL = 'https://www.ocso.com/Crime-Information/Unresolved-Homicide'
   LINK_CONTAINER = 'a[id*="__lnk_"]'
   NAVIGATE_TO_LINKS = True
-  PAGINATION_CLASS = 'a[id$="lnkNext"]'
+  PAGINATION_SELECTOR = 'a[id$="lnkNext"]'
   RECORDS_CONTAINER = '#unsolved-homicides'
   RECORD_CLASS = OrangeCountySherriffRecord
 
@@ -139,10 +141,6 @@ class OrangeCountySherriffScraper(Scraper):
         self._harvest_link_information()
         link_idx += 1
     except NoSuchElementException:
-      if link_idx < 16 and page < 21:
-        print 'skipped records!'
-        pdb.set_trace()
-
       if self._navigate_to_next_page(True):
         self._visit_image_links(page + 1)
     return
